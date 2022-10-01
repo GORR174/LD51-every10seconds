@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class OpenCloseDoorComponent : MonoBehaviour
 {
-    /*
-    public Animator doorAnimator;
-    */
-    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.name.Contains("Player"))
         {
-        //    doorAnimator.SetBool("IsOpen", true);
+            // doorAnimator.SetBool("IsOpen", true);
         }
     }
 
@@ -20,7 +16,7 @@ public class OpenCloseDoorComponent : MonoBehaviour
     {
         if (collision.name.Contains("Player"))
         {
-        //    doorAnimator.SetBool("IsOpen", false);
+            // doorAnimator.SetBool("IsOpen", false);
         }
     }
 }

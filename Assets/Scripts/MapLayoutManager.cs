@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MapLayoutManager : MonoBehaviour
 {
@@ -16,9 +19,10 @@ public class MapLayoutManager : MonoBehaviour
     private List<RoomManager> pathFromEntranceToExit;
     private List<RoomManager> pathFromEntranceToExitSiblings;
     private List<RoomManager> allRooms;
+
     private void Start()
     {
-        allRooms = new List<RoomManager>() { initRoomManager };
+        allRooms = new List<RoomManager> { initRoomManager };
         CreatePathFromStartToExit();
         CreateSubBranches();
         CreateTreasureRooms();
@@ -26,30 +30,31 @@ public class MapLayoutManager : MonoBehaviour
 
     private void CreatePathFromStartToExit()
     {
-        pathFromEntranceToExit = new List<RoomManager>() { initRoomManager };
+        pathFromEntranceToExit = new List<RoomManager> { initRoomManager };
         RoomManager currRoom = initRoomManager;
-        List<int> badDirections = new List<int>();
+        List<Direction> badDirections = new List<Direction>();
         for (var i = 0; i < numRoomsToGenerate; i++)
         {
-            bool foundGoodDirection = false;
+            var foundGoodDirection = false;
             newRoom = i == numRoomsToGenerate - 1 ? Instantiate(exitRoom) : Instantiate(GetRandomRoom());
-            RoomManager newRoomManager = newRoom.GetComponent<RoomManager>();
+            var newRoomManager = newRoom.GetComponent<RoomManager>();
             while (!foundGoodDirection)
             {
-                int direction = Random.Range(0, 5);
+                var direction = (Direction)Random.Range(0, 4);
                 while (badDirections.Contains(direction))
                 {
-                    direction = Random.Range(0, 5);
+                    direction = (Direction)Random.Range(0, 4);
                 }
+
                 PositionRoomInCorrectDirection(direction, newRoomManager, currRoom);
-                if (!DoesNewRoomOverlapWithAnyExisting(newRoomManager))
+                if (!IsOverlappingWithExisted(newRoomManager))
                 {
                     pathFromEntranceToExit.Add(newRoomManager);
                     allRooms.Add(newRoomManager);
                     UnhideDoor(direction, currRoom);
                     currRoom = newRoomManager;
                     foundGoodDirection = true;
-                    badDirections = new List<int>();
+                    badDirections = new List<Direction>();
                     badDirections.Add(GetOppositeDirection(direction));
                 }
                 else
@@ -57,11 +62,12 @@ public class MapLayoutManager : MonoBehaviour
                     newRoomManager.InitializeDoors();
                     badDirections.Add(direction);
                 }
+
                 if (badDirections.Count == 4)
                 {
                     Destroy(newRoomManager);
                     Destroy(newRoom);
-                    badDirections = new List<int>();
+                    badDirections = new List<Direction>();
                     foundGoodDirection = true;
                     currRoom = initRoomManager;
                 }
@@ -96,7 +102,7 @@ public class MapLayoutManager : MonoBehaviour
     private GameObject GetRandomRoom()
     {
         int roomType = Random.Range(0, 4);
-        switch(roomType)
+        switch (roomType)
         {
             case (0):
             case (1):
@@ -104,33 +110,35 @@ public class MapLayoutManager : MonoBehaviour
             case (2):
                 return GetRandomLargeRoom();
         }
+
         return GetRandomMediumRoom();
     }
 
     private void CreateSubBranches()
     {
-        List<int> badDirections = new List<int>();
+        var badDirections = new List<Direction>();
         pathFromEntranceToExitSiblings = new List<RoomManager>();
-        List<RoomManager> subList = pathFromEntranceToExit.GetRange(1, pathFromEntranceToExit.Count - 2);
-        foreach (RoomManager currRoom in subList)
+        var subList = pathFromEntranceToExit.GetRange(1, pathFromEntranceToExit.Count - 2);
+
+        foreach (var currRoom in subList)
         {
-            bool foundGoodDirection = false;
+            var foundGoodDirection = false;
             newRoom = Instantiate(GetRandomRoom());
-            RoomManager newRoomManager = newRoom.GetComponent<RoomManager>();
+            var newRoomManager = newRoom.GetComponent<RoomManager>();
             while (!foundGoodDirection)
             {
-                int direction = Random.Range(0, 4);
+                var direction = (Direction)Random.Range(0, 4);
                 while (badDirections.Contains(direction))
                 {
-                    direction = Random.Range(0, 4);
+                    direction = (Direction)Random.Range(0, 4);
                 }
-                
+
                 PositionRoomInCorrectDirection(direction, newRoomManager, currRoom);
-                if (!DoesNewRoomOverlapWithAnyExisting(newRoomManager))
+                if (!IsOverlappingWithExisted(newRoomManager))
                 {
                     allRooms.Add(newRoomManager);
                     foundGoodDirection = true;
-                    badDirections = new List<int>();
+                    badDirections = new List<Direction>();
                     pathFromEntranceToExitSiblings.Add(newRoomManager);
                     badDirections.Add(GetOppositeDirection(direction));
                     UnhideDoor(direction, currRoom);
@@ -140,11 +148,12 @@ public class MapLayoutManager : MonoBehaviour
                     newRoomManager.InitializeDoors();
                     badDirections.Add(direction);
                 }
+
                 if (badDirections.Count == 4)
                 {
                     Destroy(newRoomManager);
                     Destroy(newRoom);
-                    badDirections = new List<int>();
+                    badDirections = new List<Direction>();
                     foundGoodDirection = true;
                 }
             }
@@ -153,205 +162,169 @@ public class MapLayoutManager : MonoBehaviour
 
     private void CreateTreasureRooms()
     {
-        int numTreasureRoomsCreated = 0;
-        List<int> badDirections = new List<int>();
-        List<RoomManager> subList = pathFromEntranceToExitSiblings.GetRange(0, pathFromEntranceToExitSiblings.Count - 1);
-        List<int> roomsLinkedToTreasure = new List<int>();
-        for (var i = 0; i <= 4; i=i+1)
+        var treasureRoomsCount = 0;
+        var badDirections = new List<Direction>();
+        var subList = pathFromEntranceToExitSiblings.GetRange(0, pathFromEntranceToExitSiblings.Count - 1);
+        var roomsLinkedToTreasure = new List<int>();
+
+        for (var i = 0; i < 4; i++)
         {
-            if(roomsLinkedToTreasure.Count < subList.Count)
+            if (roomsLinkedToTreasure.Count < subList.Count)
             {
-                bool foundGoodDirection = false;
+                var foundGoodDirection = false;
                 newRoom = Instantiate(GetRandomTreasureRoom());
-                RoomManager newRoomManager = newRoom.GetComponent<RoomManager>();
+                var newRoomManager = newRoom.GetComponent<RoomManager>();
+
                 while (!foundGoodDirection)
                 {
-                    int roomId = Random.Range(0, subList.Count);
+                    var roomId = Random.Range(0, subList.Count);
                     while (roomsLinkedToTreasure.Contains(roomId))
                     {
                         roomId = Random.Range(0, subList.Count);
                     }
-                    RoomManager currRoom = subList[roomId];
-                    int direction = Random.Range(0, 4);
+
+                    var currRoom = subList[roomId];
+
+                    var direction = (Direction)Random.Range(0, 4);
                     while (badDirections.Contains(direction))
                     {
-                        direction = Random.Range(0, 4);
+                        direction = (Direction)Random.Range(0, 4);
                     }
 
                     PositionRoomInCorrectDirection(direction, newRoomManager, currRoom);
-                    if (!DoesNewRoomOverlapWithAnyExisting(newRoomManager))
+                    if (!IsOverlappingWithExisted(newRoomManager))
                     {
                         allRooms.Add(newRoomManager);
                         foundGoodDirection = true;
-                        badDirections = new List<int>();
+                        badDirections = new List<Direction>();
                         UnhideDoor(direction, currRoom);
                         roomsLinkedToTreasure.Add(roomId);
-                        numTreasureRoomsCreated++;
+                        treasureRoomsCount++;
                     }
                     else
                     {
                         newRoomManager.InitializeDoors();
                         badDirections.Add(direction);
                     }
+
                     if (badDirections.Count == 4)
                     {
                         Destroy(newRoomManager);
                         Destroy(newRoom);
-                        badDirections = new List<int>();
+                        badDirections = new List<Direction>();
                         foundGoodDirection = true;
                     }
                 }
             }
-            
         }
 
-        if (numTreasureRoomsCreated < 2)
+        if (treasureRoomsCount >= 2) return;
+        
+        for (var i = allRooms.Count - 2; i > 0; i--)
         {
-            for (var i = allRooms.Count - 2; i > 0; i--)
+            var currRoom = allRooms[i];
+            var foundGoodDirection = false;
+            newRoom = Instantiate(GetRandomTreasureRoom());
+            var newRoomManager = newRoom.GetComponent<RoomManager>();
+
+            while (!foundGoodDirection)
             {
-                RoomManager currRoom = allRooms[i];
-                bool foundGoodDirection = false;
-                newRoom = Instantiate(GetRandomTreasureRoom());
-                RoomManager newRoomManager = newRoom.GetComponent<RoomManager>();
-                while (!foundGoodDirection)
+                var direction = (Direction)Random.Range(0, 4);
+                while (badDirections.Contains(direction))
                 {
-                    int direction = Random.Range(0, 4);
-                    while (badDirections.Contains(direction))
+                    direction = (Direction)Random.Range(0, 4);
+                }
+
+                PositionRoomInCorrectDirection(direction, newRoomManager, currRoom);
+                if (!IsOverlappingWithExisted(newRoomManager))
+                {
+                    allRooms.Add(newRoomManager);
+                    foundGoodDirection = true;
+                    badDirections = new List<Direction>();
+                    UnhideDoor(direction, currRoom);
+                    treasureRoomsCount++;
+                    if (treasureRoomsCount == 2)
                     {
-                        direction = Random.Range(0, 4);
+                        i = 0;
                     }
-                    
-                    PositionRoomInCorrectDirection(direction, newRoomManager, currRoom);
-                    if (!DoesNewRoomOverlapWithAnyExisting(newRoomManager))
-                    {
-                        allRooms.Add(newRoomManager);
-                        foundGoodDirection = true;
-                        badDirections = new List<int>();
-                        UnhideDoor(direction, currRoom);
-                        numTreasureRoomsCreated++;
-                        if(numTreasureRoomsCreated == 2)
-                        {
-                            i = 0;
-                        }
-                    }
-                    else
-                    {
-                        newRoomManager.InitializeDoors();
-                        badDirections.Add(direction);
-                    }
-                    if (badDirections.Count == 4)
-                    {
-                        Destroy(newRoomManager);
-                        Destroy(newRoom);
-                        badDirections = new List<int>();
-                        foundGoodDirection = true;
-                    }
+                }
+                else
+                {
+                    newRoomManager.InitializeDoors();
+                    badDirections.Add(direction);
+                }
+
+                if (badDirections.Count == 4)
+                {
+                    Destroy(newRoomManager);
+                    Destroy(newRoom);
+                    badDirections = new List<Direction>();
+                    foundGoodDirection = true;
                 }
             }
         }
     }
 
-    private void PositionRoomInCorrectDirection(int direction, RoomManager newRoomManager, RoomManager currRoom)
+    private void PositionRoomInCorrectDirection(Direction direction, RoomManager newRoomManager, RoomManager currRoom)
     {
-        float diffX, diffY = 0;
-        switch (direction)
-        {
-            // Left
-            case (0):
-                diffX = newRoomManager.RightDoor.transform.position.x - currRoom.LeftDoor.transform.position.x;
-                diffY = newRoomManager.RightDoor.transform.position.y - currRoom.LeftDoor.transform.position.y;
-                newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
-                newRoomManager.RightDoor.SetActive(false);
-                newRoomManager.RightRoom = currRoom;
-                break;
-            // Right
-            case (1):
-                diffX = newRoomManager.LeftDoor.transform.position.x - currRoom.RightDoor.transform.position.x;
-                diffY = newRoomManager.LeftDoor.transform.position.y - currRoom.RightDoor.transform.position.y;
-                newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
-                newRoomManager.LeftDoor.SetActive(false);
-                newRoomManager.LeftRoom = currRoom;
-                break;
-            // Bottom
-            case (2):
-                diffX = newRoomManager.TopDoor.transform.position.x - currRoom.BottomDoor.transform.position.x;
-                diffY = newRoomManager.TopDoor.transform.position.y - currRoom.BottomDoor.transform.position.y;
-                newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
-                newRoomManager.TopDoor.SetActive(false);
-                newRoomManager.TopRoom = currRoom;
-                break;
-            // Top
-            case (3):
-                diffX = newRoomManager.BottomDoor.transform.position.x - currRoom.TopDoor.transform.position.x;
-                diffY = newRoomManager.BottomDoor.transform.position.y - currRoom.TopDoor.transform.position.y;
-                newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
-                newRoomManager.BottomDoor.SetActive(false);
-                newRoomManager.BottomRoom = currRoom;
-                break;
-        }
+        var newRoomDoor = newRoomManager.GetDoorByDirection(GetOppositeDirection(direction));
+        var currentRoomDoor = currRoom.GetDoorByDirection(direction);
+
+        var newRoomPosition = newRoomDoor.transform.position;
+        var currentRoomPosition = currentRoomDoor.transform.position;
+        var diffX = newRoomPosition.x - currentRoomPosition.x;
+        var diffY = newRoomPosition.y - currentRoomPosition.y;
+        
+        // ReSharper disable once Unity.InefficientPropertyAccess
+        newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
+
+        newRoomDoor.SetActive(false);
+        newRoomManager.SetRoomByDirection(direction, currRoom);
     }
 
-    public int GetOppositeDirection(int direction)
+    private static Direction GetOppositeDirection(Direction direction)
     {
-        switch (direction)
+        return direction switch
         {
-            case (0):
-            {
-                return 1;
-            }
-            case(1):
-            {
-                return 0;
-            }
-            case (2):
-            {
-                return 3;
-            }
-            case(3):
-            {
-                return 2;
-            }
-        }
-        return 0;
+            (Direction.LEFT) => Direction.RIGHT,
+            (Direction.RIGHT) => Direction.LEFT,
+            (Direction.TOP) => Direction.BOTTOM,
+            (Direction.BOTTOM) => Direction.TOP,
+            _ => throw new ArgumentException($"Unhandled direction: {direction}")
+        };
     }
 
-    public void UnhideDoor(int direction, RoomManager currRoom)
+    private void UnhideDoor(Direction direction, RoomManager currRoom)
     {
         switch (direction)
         {
-            // Left
-            case (0):
+            case (Direction.LEFT):
                 currRoom.LeftDoor.GetComponent<DoorHider>().UnhideDoor();
                 break;
-            // Right
-            case (1):
+
+            case (Direction.RIGHT):
                 currRoom.RightDoor.GetComponent<DoorHider>().UnhideDoor();
                 break;
-            // Bottom
-            case (2):
+
+            case (Direction.BOTTOM):
                 currRoom.BottomDoor.GetComponent<DoorHider>().UnhideDoor();
                 break;
-            // Top
-            case (3):
+
+            case (Direction.TOP):
                 currRoom.TopDoor.GetComponent<DoorHider>().UnhideDoor();
                 break;
+            default:
+                throw new ArgumentException($"Unhandled direction: {direction}");
         }
     }
 
-    public bool DoesNewRoomOverlapWithAnyExisting(RoomManager newRoomManager)
+    private bool IsOverlappingWithExisted(RoomManager newRoomManager)
     {
-        foreach(RoomManager roomManager in allRooms)
-        {
-            if(RoomsOverlap(roomManager, newRoomManager))
-            {
-                return true;
-            }
-        }
-        return false;
+        return allRooms.Any(roomManager => RoomsOverlap(roomManager, newRoomManager));
     }
 
     // https://silentmatt.com/rectangle-intersection/
-    public static bool RoomsOverlap(RoomManager room1, RoomManager room2)
+    private static bool RoomsOverlap(RoomManager room1, RoomManager room2)
     {
         float room1X1 = room1.LeftDoor.transform.position.x;
         float room2X1 = room2.LeftDoor.transform.position.x;
