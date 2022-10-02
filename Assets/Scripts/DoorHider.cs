@@ -5,15 +5,18 @@ using UnityEngine;
 public class DoorHider : MonoBehaviour
 {
     private readonly Color doorColor = new Color(1, 1, 1, 1);
-    [SerializeField] private SpriteRenderer SpriteRenderer;
-
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private BoxCollider2D boxCollider2D;
+    
     public void MakeDoorHidden()
     {
-        SpriteRenderer.color = Color.gray;
+        spriteRenderer.color = Color.gray;
+        boxCollider2D.enabled = true;
     }
 
     public void UnhideDoor()
     {
-        SpriteRenderer.color = doorColor;
+        spriteRenderer.color = doorColor;
+        boxCollider2D.enabled = false;
     }
 }
