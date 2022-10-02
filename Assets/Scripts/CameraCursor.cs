@@ -10,6 +10,6 @@ public class CameraCursor : MonoBehaviour
     private void Update()
     {
         transform.position = Vector3.Lerp(playerTransform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition),
-            0.2f);
+            Input.GetKey(KeyCode.LeftControl) ? 0.6f : 0.1f);
     }
 }
