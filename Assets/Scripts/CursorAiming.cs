@@ -6,10 +6,6 @@ public class CursorAiming : MonoBehaviour
 {
     [SerializeField] private Transform arm;
 
-    void Start()
-    {
-    }
-
     void Update()
     {
         var mousePosition = Input.mousePosition;
@@ -18,20 +14,13 @@ public class CursorAiming : MonoBehaviour
         mousePosition.x -= armPosition.x;
         mousePosition.y -= armPosition.y;
         var angle = Mathf.Atan2(mousePosition.y, mousePosition.x) * Mathf.Rad2Deg;
-        var scale = AngleToScale(angle);
-        transform.localScale = new Vector3(scale, 1, 1);
-    //    Debug.Log($"{scale}, {transform.localScale.x}");
         
-        arm.rotation = Quaternion.Euler(new Vector3(0, 0, scale < 0 ? -(180 - angle) : angle));
-    }
+        Debug.Log(Mathf.Abs(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - arm.position.x));
+        if (Mathf.Abs(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - arm.position.x) > 0.27f)
+        {
+            transform.localScale = mousePosition.x > 0 ? new Vector3(1, 1, 1) : new Vector3(-1, 1, 1);
+        }
 
-    private int AngleToScale(float angle)
-    {
-        var cos = Mathf.Cos(Mathf.Deg2Rad * angle);
-
-        if (cos <= -0.1)
-            return -1;
-        
-        return 1;
+        arm.rotation = Quaternion.Euler(new Vector3(0, 0, transform.localScale.x < 0 ? -(180 - angle) : angle));
     }
 }

@@ -19,13 +19,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.localScale = movement.x switch
-        {
-            > 0 => new Vector3(1, 1, 1),
-            < 0 => new Vector3(-1, 1, 1),
-            _ => transform.localScale
-        };
-
         playerRigidBody.MovePosition(playerRigidBody.position + movement * (speed * Time.fixedDeltaTime));
     }
 }
