@@ -296,26 +296,7 @@ public class MapLayoutManager : MonoBehaviour
 
     private void UnhideDoor(Direction direction, RoomManager currRoom)
     {
-        switch (direction)
-        {
-            case (Direction.LEFT):
-                currRoom.LeftDoor.GetComponent<DoorHider>().UnhideDoor();
-                break;
-
-            case (Direction.RIGHT):
-                currRoom.RightDoor.GetComponent<DoorHider>().UnhideDoor();
-                break;
-
-            case (Direction.BOTTOM):
-                currRoom.BottomDoor.GetComponent<DoorHider>().UnhideDoor();
-                break;
-
-            case (Direction.TOP):
-                currRoom.TopDoor.GetComponent<DoorHider>().UnhideDoor();
-                break;
-            default:
-                throw new ArgumentException($"Unhandled direction: {direction}");
-        }
+        currRoom.GetDoorByDirection(direction).GetComponent<DoorHider>().UnhideDoor();
     }
 
     private bool IsOverlappingWithExisted(RoomManager newRoomManager)
