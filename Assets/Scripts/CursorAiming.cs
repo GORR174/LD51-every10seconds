@@ -15,7 +15,6 @@ public class CursorAiming : MonoBehaviour
         mousePosition.y -= armPosition.y;
         var angle = Mathf.Atan2(mousePosition.y, mousePosition.x) * Mathf.Rad2Deg;
         
-        Debug.Log(Mathf.Abs(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - arm.position.x));
         if (Mathf.Abs(Camera.main.ScreenToWorldPoint(Input.mousePosition).x - arm.position.x) > 0.27f)
         {
             transform.localScale = mousePosition.x > 0 ? new Vector3(1, 1, 1) : new Vector3(-1, 1, 1);
