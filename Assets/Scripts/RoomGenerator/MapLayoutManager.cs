@@ -20,12 +20,15 @@ public class MapLayoutManager : MonoBehaviour
     private List<RoomManager> pathFromEntranceToExitSiblings;
     private List<RoomManager> allRooms;
 
+    [SerializeField] private AstarPath pathfinder;
+
     private void Start()
     {
         allRooms = new List<RoomManager> { initRoomManager };
         CreatePathFromStartToExit();
         CreateSubBranches();
         CreateTreasureRooms();
+        pathfinder.Scan();
     }
 
     private void CreatePathFromStartToExit()

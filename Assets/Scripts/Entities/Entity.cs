@@ -13,7 +13,7 @@ namespace Entities
                 Die();
         }
 
-        public virtual void Die()
+        protected virtual void Die()
         {
             Destroy(gameObject);
         }
