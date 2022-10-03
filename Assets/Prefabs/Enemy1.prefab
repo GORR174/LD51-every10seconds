@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 6
+  corpsePrefab: {fileID: 6121170710301560183, guid: 898ef8f6b5399b8478e820c3284654a7, type: 3}
 --- !u!114 &4519749843540730399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootingSpeed: 6
-  projectilePrefab: {fileID: 50964076788774746, guid: fe5c0924bfdbfec46a92fdb8f8f34c34, type: 3}
+  projectilePrefab: {fileID: 50964076788774746, guid: d6eb023021e0d7b48818410e2790ae77, type: 3}
   damage: 1
   projectileSpeed: 8
   isShooting: 0
@@ -165,7 +166,7 @@ MonoBehaviour:
   radius: 0.5
   height: 2
   canMove: 1
-  maxSpeed: 4
+  maxSpeed: 5
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2

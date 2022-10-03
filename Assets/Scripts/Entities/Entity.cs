@@ -8,6 +8,7 @@ namespace Entities
     public class Entity : MonoBehaviour
     {
         [SerializeField] private float health;
+        [SerializeField] private GameObject corpsePrefab;
 
         public virtual void TakeDamage(float damage)
         {
@@ -20,7 +21,13 @@ namespace Entities
         {
             if (CompareTag("Player"))
             {
-                SceneManager.LoadScene("MenuScene");
+                SceneManager.LoadScene("LoseScene");
+            }
+
+            if (CompareTag("Enemy"))
+            {
+                var corpse = Instantiate(corpsePrefab, transform.position, Quaternion.identity);
+                corpse.transform.Rotate(Vector3.forward, new System.Random().Next(360));
             }
             Destroy(gameObject);
         }
