@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/PavlekTestScene.unity
-    guid: d4c850b9b4c14f3bb77119f83840bd0d
+    path: Assets/Scenes/MenuScene.unity
+    guid: 982b4c4db64dd5944997c2ac6375d5fc
+  - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: a8bb95385a122ef41bc8cbc3b2f12911
+  - enabled: 1
+    path: Assets/Scenes/LoseScene.unity
+    guid: 74fa72d8e0815cc4597b39133788b584
+  - enabled: 1
+    path: Assets/Scenes/WinScene.unity
+    guid: 27220da4354c68940a2d4ea3162b31d2
   m_configObjects: {}
