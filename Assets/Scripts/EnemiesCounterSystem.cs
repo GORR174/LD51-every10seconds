@@ -17,7 +17,7 @@ public class EnemiesCounterSystem : MonoBehaviour
 
         if (enemies.Length <= 0)
         {
-            SceneManager.LoadScene("MenuScene");
+            SceneManager.LoadScene("WinScene");
         }
     }
 }
