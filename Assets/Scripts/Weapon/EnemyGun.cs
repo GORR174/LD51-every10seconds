@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using Util;
 
@@ -8,8 +9,12 @@ namespace Weapon
     {
         [SerializeField] private Transform shootPoint;
         [SerializeField] private Transform playerTransform;
-        
-        
+
+        public void OnEnable()
+        {
+            playerTransform = GameObject.FindWithTag("Player").transform;
+        }
+
         public new void Update()
         {
             base.Update();

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Weapon;
 
 namespace Entities
@@ -7,6 +8,7 @@ namespace Entities
     public class Entity : MonoBehaviour
     {
         [SerializeField] private float health;
+        [SerializeField] private GameObject corpsePrefab;
 
         public virtual void TakeDamage(float damage)
         {
@@ -17,7 +19,19 @@ namespace Entities
 
         protected virtual void Die()
         {
+            if (CompareTag("Player"))
+            {
+                SceneManager.LoadScene("LoseScene");
+            }
+
+            if (CompareTag("Enemy"))
+            {
+                var corpse = Instantiate(corpsePrefab, transform.position, Quaternion.identity);
+                corpse.transform.Rotate(Vector3.forward, new System.Random().Next(360));
+            }
             Destroy(gameObject);
         }
+
+        public float Health => health;
     }
 }
