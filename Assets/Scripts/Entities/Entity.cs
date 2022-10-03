@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Weapon;
 
 namespace Entities
@@ -17,7 +18,13 @@ namespace Entities
 
         protected virtual void Die()
         {
+            if (CompareTag("Player"))
+            {
+                SceneManager.LoadScene("MenuScene");
+            }
             Destroy(gameObject);
         }
+
+        public float Health => health;
     }
 }

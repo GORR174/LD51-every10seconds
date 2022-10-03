@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.U2D;
 using Util;
 
 namespace Weapon
@@ -8,10 +9,41 @@ namespace Weapon
         [SerializeField] private Transform shootPoint;
 
         [SerializeField] private Transform handTransform;
+        [SerializeField] private CameraRotator cameraRotator;
+        [SerializeField] private SpriteRenderer[] noise;
+        [SerializeField] private PixelPerfectCamera camera;
+
+        private float timer;
+        private bool canShoot = true;
 
         public new void Update()
         {
-            isShooting = Input.GetMouseButton(0);
+            timer += Time.deltaTime;
+            if (timer >= 10)
+            {
+                timer = 0;
+                canShoot = !canShoot;
+
+                if (!canShoot)
+                {
+                    cameraRotator.strength = 5;
+                    cameraRotator.speed = 1.5f;
+                    foreach (var spriteRenderer in noise)
+                    {
+                        spriteRenderer.color = Color.red;
+                    }
+                }
+                else
+                {
+                    cameraRotator.strength = 2;
+                    cameraRotator.speed = 1;
+                    foreach (var spriteRenderer in noise)
+                    {
+                        spriteRenderer.color = Color.white;
+                    }
+                }
+            }
+            isShooting = Input.GetMouseButton(0) && canShoot;
             base.Update();
         }
 
