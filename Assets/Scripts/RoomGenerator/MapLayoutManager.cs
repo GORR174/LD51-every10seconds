@@ -28,6 +28,11 @@ public class MapLayoutManager : MonoBehaviour
         CreatePathFromStartToExit();
         CreateSubBranches();
         CreateTreasureRooms();
+        Invoke(nameof(ScanMap), 1);
+    }
+
+    private void ScanMap()
+    {
         pathfinder.Scan();
     }
 
@@ -222,7 +227,7 @@ public class MapLayoutManager : MonoBehaviour
         }
 
         if (treasureRoomsCount >= 2) return;
-        
+
         for (var i = allRooms.Count - 2; i > 0; i--)
         {
             var currRoom = allRooms[i];
@@ -277,9 +282,10 @@ public class MapLayoutManager : MonoBehaviour
         var currentRoomPosition = currentRoomDoor.transform.position;
         var diffX = newRoomPosition.x - currentRoomPosition.x;
         var diffY = newRoomPosition.y - currentRoomPosition.y;
-        
+
         // ReSharper disable once Unity.InefficientPropertyAccess
-        newRoom.transform.position = new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
+        newRoom.transform.position =
+            new Vector3(newRoom.transform.position.x - diffX, newRoom.transform.position.y - diffY, 0);
 
         newRoomDoor.SetActive(false);
         newRoomManager.SetRoomByDirection(direction, currRoom);

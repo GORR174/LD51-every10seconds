@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 8094065317376734440}
   - component: {fileID: 2832852323023513815}
   - component: {fileID: 5900926354063689825}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HorizontalWalls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -895,7 +895,7 @@ GameObject:
   - component: {fileID: 7212460604628546647}
   - component: {fileID: 7350504945446362671}
   - component: {fileID: 8911786760499578233}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4000,7 +4000,7 @@ GameObject:
   - component: {fileID: 2281493610087142386}
   - component: {fileID: 7383237915367064796}
   - component: {fileID: 4695472686864236179}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: VerticalWalls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4912,7 +4912,7 @@ GameObject:
   - component: {fileID: 6944919853937880631}
   - component: {fileID: 7642972973391324505}
   - component: {fileID: 4040740406724440350}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HorizontalWallsTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5528,6 +5528,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Right
       objectReference: {fileID: 0}
+    - target: {fileID: 4806830457991626427, guid: b93f4245bbf5c2b49a892eba439231c8, type: 3}
+      propertyPath: m_Layer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b93f4245bbf5c2b49a892eba439231c8, type: 3}
 --- !u!4 &4151503335867000198 stripped
@@ -5598,6 +5602,10 @@ PrefabInstance:
     - target: {fileID: 8443935977819436112, guid: ad1a89d52b6c4174394203ba3a07f6c3, type: 3}
       propertyPath: m_Name
       value: Top
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443935977819436112, guid: ad1a89d52b6c4174394203ba3a07f6c3, type: 3}
+      propertyPath: m_Layer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad1a89d52b6c4174394203ba3a07f6c3, type: 3}
@@ -5670,6 +5678,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bottom
       objectReference: {fileID: 0}
+    - target: {fileID: 8443935977819436112, guid: ad1a89d52b6c4174394203ba3a07f6c3, type: 3}
+      propertyPath: m_Layer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad1a89d52b6c4174394203ba3a07f6c3, type: 3}
 --- !u!1 &5200032388080739074 stripped
@@ -5740,6 +5752,10 @@ PrefabInstance:
     - target: {fileID: 4806830457991626427, guid: b93f4245bbf5c2b49a892eba439231c8, type: 3}
       propertyPath: m_Name
       value: Left
+      objectReference: {fileID: 0}
+    - target: {fileID: 4806830457991626427, guid: b93f4245bbf5c2b49a892eba439231c8, type: 3}
+      propertyPath: m_Layer
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b93f4245bbf5c2b49a892eba439231c8, type: 3}
