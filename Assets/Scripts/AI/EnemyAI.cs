@@ -1,4 +1,5 @@
 ﻿using System;
+using Pathfinding;
 using UnityEngine;
 using UnityEngine.AI;
 using Weapon;
@@ -9,14 +10,19 @@ namespace AI
 {
     public class EnemyAI : MonoBehaviour
     {
-        public NavMeshAgent agent;
-        public Transform player;
-        public LayerMask groundMask, playerMask;
+        private Transform player;
+        private EnemyGun gun;
 
-        public EnemyGun gun;
+        private AIDestinationSetter destinationSetter;
+        private AIPath aiPath;
+
+        public RadiusTrigger chaisePlayerTrigger;
+        public RadiusTrigger attackPlayerTrigger;
+
+        public GameObject walkPointPrefab;
 
         // Patroling
-        public Vector3 walkPoint;
+        private Transform walkPoint;
         private bool isWalkPointSet;
         public float walkPointRange;
 
@@ -25,28 +31,51 @@ namespace AI
         private bool alreadyAttacked;
 
         //States 
-        public float sightRange, attackRange;
         public bool playerInSightRange, playerInAttackRange;
 
         private void Awake()
         {
+            gun = GetComponent<EnemyGun>();
             player = Object.FindObjectOfType<PlayerMovement>().transform;
-            agent = GetComponent<NavMeshAgent>();
-            agent.updateRotation = false;
-            agent.updateUpAxis = false;
+            destinationSetter = GetComponent<AIDestinationSetter>();
+            aiPath = GetComponent<AIPath>();
+        }
+
+        private void Start()
+        {
+            chaisePlayerTrigger.onTriggerEnter += c =>
+            {
+                if (c.CompareTag("Player"))
+                    playerInSightRange = true;
+            };
+
+            chaisePlayerTrigger.onTriggerExit += c =>
+            {
+                if (c.CompareTag("Player"))
+                    playerInSightRange = false;
+            };
+
+            attackPlayerTrigger.onTriggerEnter += c =>
+            {
+                if (c.CompareTag("Player"))
+                    playerInAttackRange = true;
+            };
+
+            attackPlayerTrigger.onTriggerExit += c =>
+            {
+                if (c.CompareTag("Player"))
+                    playerInAttackRange = false;
+            };
         }
 
         private void Update()
         {
-            playerInSightRange = Physics2D.OverlapCircle(transform.position, sightRange, playerMask);
-            playerInAttackRange = Physics2D.OverlapCircle(transform.position, attackRange, playerMask);
-            
             if (!playerInSightRange && !playerInAttackRange)
                 Patroling();
             
             if (playerInSightRange && !playerInAttackRange)
                 ChaisePlayer();
-            
+
             if (playerInAttackRange && playerInSightRange)
                 AttackPlayer();
         }
@@ -57,33 +86,38 @@ namespace AI
                 SearchWalkPoint();
 
             if (isWalkPointSet)
-                agent.SetDestination(walkPoint);
+                destinationSetter.target = walkPoint;
 
-            var distanceToWalkPoint = transform.position - walkPoint;
-            if (distanceToWalkPoint.magnitude < 1)
+            if (aiPath.reachedDestination)
                 isWalkPointSet = false;
         }
 
         private void SearchWalkPoint()
         {
-            var randomY = Random.Range(-walkPointRange, walkPointRange); 
+            if (walkPoint != null)
+                Destroy(walkPoint.gameObject);
+
+            var randomY = Random.Range(-walkPointRange, walkPointRange);
             var randomX = Random.Range(-walkPointRange, walkPointRange);
 
-            walkPoint = transform.position + new Vector3(randomX, randomY, 0);
+            walkPoint = Instantiate(walkPointPrefab,
+                transform.position + new Vector3(randomX, randomY, 0),
+                Quaternion.identity).GetComponent<Transform>();
+            isWalkPointSet = true;
         }
 
         private void ChaisePlayer()
         {
-            agent.SetDestination(player.position);
+            destinationSetter.target = player.transform;
         }
 
         private void AttackPlayer()
         {
-            agent.SetDestination(transform.position);
+            destinationSetter.target = transform;
 
             if (!alreadyAttacked)
             {
-                gun.transform.LookAt(player);
+                Debug.Log("Attacking");
                 gun.isShooting = true;
                 alreadyAttacked = true;
                 Invoke(nameof(ResetAttack), attackCooldown);
@@ -93,7 +127,7 @@ namespace AI
         private void ResetAttack()
         {
             alreadyAttacked = false;
-            gun.isShooting = false;  
+            gun.isShooting = false;
         }
     }
 }
