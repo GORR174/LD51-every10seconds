@@ -17,8 +17,15 @@ namespace Weapon
                 && !other.CompareTag(shooterTag) || other.GetComponent<TilemapCollider2D>() != null)
             {
                 var entity = other.GetComponent<Entity>();
+                var entityParent = other.transform.parent;
                 if (entity != null)
                     entity.TakeDamage(damage);
+                else if (entityParent != null)
+                {
+                    var parentEntity = entityParent.GetComponent<Entity>();
+                    if (parentEntity != null)
+                        parentEntity.TakeDamage(damage);
+                }
 
                 Destroy(gameObject);
             }
